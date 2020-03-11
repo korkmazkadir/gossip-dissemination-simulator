@@ -41,8 +41,6 @@ mainApp.controller('mainController', function($scope) {
          process: function(){
             this.inbox.forEach( m => {
                if(this.processedMessages.includes(m) === false){
-                  console.log("processing message");
-                  //this.logs.push( this.round + " - " + m);
                   this.logs.push(m);
                   this.send( m );
                   this.processedMessages.push( m );
@@ -52,7 +50,8 @@ mainApp.controller('mainController', function($scope) {
             this.round++;
          },
          getColor:function(){
-            return stringToColour(this.logs.join("-"));
+            //return stringToColour(this.logs.join("-"));
+            return "steelblue";
          }
       };
    }
@@ -69,6 +68,10 @@ mainApp.controller('mainController', function($scope) {
    }
 
    function assignNeighbours(numberOfNeighbours){
+
+      //clears neighbours
+      nodes.forEach(n => { n.neighbours.length = 0});
+
       const maxNodeId = nodes.length;
       nodes.forEach( n => {
          //console.log("-----> Assigning neighbour for: " + n.id);
@@ -90,8 +93,8 @@ mainApp.controller('mainController', function($scope) {
    createNodes(2000);
    assignNeighbours(4);
 
-   nodes[31].inbox.push("message from 33");
-   nodes[53].inbox.push("message from 53");
+   nodes[31].inbox.push("message from 33 --");
+   nodes[53].inbox.push("message from 53 CDF");
 
 
    var counter = 1;
@@ -113,10 +116,10 @@ mainApp.controller('mainController', function($scope) {
 
 
    console.log("################## Results ##############################");
-   nodes.forEach(n => {
-      console.log("-----------> Node: " + n.id);
-      n.logs.forEach(l => console.log(l) );
-   })
+   //nodes.forEach(n => {
+   //   console.log("-----------> Node: " + n.id);
+   //   n.logs.forEach(l => console.log(l) );
+   //})
 
 
    function areThereMessagesToProcess(numberOfProcessedMessages){
@@ -130,6 +133,10 @@ mainApp.controller('mainController', function($scope) {
 
 
    function assignRanges(centerNode){
+
+      //clears ranges
+      nodes.forEach(n => { n.range = -1});
+
       var range = 0;
       centerNode.range = range;
       var waitingToAssignRange = centerNode.neighbours;
@@ -153,5 +160,31 @@ mainApp.controller('mainController', function($scope) {
    assignRanges(centerNode);
 
    drawNetwork(nodes);
+
+
+   $scope.getNumberOfNodes = function(){
+      return nodes.length;
+   }
+
+
+
+   $scope.centerNode = nodes.length /2;
+   $scope.updateNetwork = function(){
+      console.log($scope.centerNode);
+      const centerNode = nodes[$scope.centerNode];
+      assignRanges(centerNode);
+      console.log("Center node range: " + centerNode.range);
+      updateNetwork(nodes);
+   }
+
+   $scope.degree = 3;
+   $scope.updateDegree = function(){
+      assignNeighbours($scope.degree);
+      const centerNode = nodes[$scope.centerNode];
+      assignRanges(centerNode);
+      updateNetwork(nodes);
+   }
+
+
 
 });

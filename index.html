@@ -4,15 +4,10 @@
 	<title>Gossip Dissemintaion</title>
 
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="./css/custom-slider.css">
 
 	<!-- D3 Related -->
-	<script src="https://d3js.org/d3-array.v1.min.js"></script>
-	<script src="https://d3js.org/d3-collection.v1.min.js"></script>
-	<script src="https://d3js.org/d3-dispatch.v1.min.js"></script>
-	<script src="https://d3js.org/d3-quadtree.v1.min.js"></script>
-	<script src="https://d3js.org/d3-selection.v1.min.js"></script>
-	<script src="https://d3js.org/d3-timer.v1.min.js"></script>
-	<script src="https://d3js.org/d3-force.v1.min.js"></script>
+	<script src="https://d3js.org/d3.v4.js"></script>
 
 	<!-- Other Libs -->
 	<script type="text/javascript" src="./js/jquery-3.4.1.min.js"></script>
@@ -24,10 +19,10 @@
 <body ng-app="gossipDissemination" ng-controller="mainController">
 
 <div class="container">
-  <div class="row">
+  <div class="row" align="center">
     <div class="col" style="margin-top: 30px;">
       
-    	<svg width="960" height="700" viewBox="-480 -250 960 700">
+    	<svg width="960" height="700" viewBox="-480 -350 960 700">
     	<!--
 		  <circle r="50" stroke="brown" stroke-opacity="0.5" fill="none"></circle>
 		  <circle r="100" stroke="brown" stroke-opacity="0.5" fill="none"></circle>
@@ -38,6 +33,21 @@
 
     </div>
   </div>
+  <div class="row">
+  	<div class="col-3"> <input type="range" min="3" max="100" ng-model="degree" ng-change="updateDegree()" class="slider" id="myRange" style="margin: 20px;"> </div>
+
+  	<div class="col-9">
+  		<input type="range" min="1" max="{{getNumberOfNodes()}}" ng-model="centerNode" ng-change="updateNetwork()" class="slider" id="myRange" style="margin: 20px;">
+  	</div>
+  </div>
+
+    <div class="row">
+  	<div class="col-3" align="center"> <h4>{{degree}}</h4> </div>
+
+  	<div class="col-9" align="center"> <h4>{{centerNode}}</h4></div>
+  </div>
+
+
 </div>
 
 
