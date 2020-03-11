@@ -69,6 +69,8 @@ mainApp.controller('mainController', function($scope) {
 
    function assignNeighbours(numberOfNeighbours){
 
+      Math.seedrandom(numberOfNeighbours + "");
+
       //clears neighbours
       nodes.forEach(n => { n.neighbours.length = 0});
 
@@ -77,6 +79,7 @@ mainApp.controller('mainController', function($scope) {
          //console.log("-----> Assigning neighbour for: " + n.id);
          var assignedNeighbours = 0;
          while(assignedNeighbours < numberOfNeighbours){
+
             const randomNumber = getRandomInt(maxNodeId);
             const selectedNeighbour = nodes[randomNumber];
             if(n.neighbours.includes(selectedNeighbour) === false){
@@ -90,7 +93,7 @@ mainApp.controller('mainController', function($scope) {
       });
    }
 
-   createNodes(2000);
+   createNodes(3000);
    assignNeighbours(4);
 
    nodes[31].inbox.push("message from 33 --");
