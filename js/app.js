@@ -190,4 +190,9 @@ mainApp.controller('mainController', function($scope) {
 
 
 
+   $scope.showMessageModal = function(){
+      $('#messageScheduleModal').modal("show");
+   }
+
+
 });
