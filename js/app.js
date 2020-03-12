@@ -28,6 +28,7 @@ mainApp.controller('mainController', function($scope) {
          outbox:[],
          round: 1,
          logs:[],
+         sizeFactor:1,
          processedMessages:[],
          range: -1,
          send:function(message){
@@ -50,8 +51,15 @@ mainApp.controller('mainController', function($scope) {
             this.round++;
          },
          getColor:function(){
-            //return stringToColour(this.logs.join("-"));
-            return "steelblue";
+            if(this.logs.length === 0){
+               return "steelblue";
+            }else if(this.logs.length === 1){
+               return this.logs[0].color;
+            }
+            var str = "";
+            this.logs.forEach(l=> str = str +  l.message );
+
+            return stringToColour(str);
          }
       };
    }
@@ -96,26 +104,7 @@ mainApp.controller('mainController', function($scope) {
    createNodes(3000);
    assignNeighbours(4);
 
-   nodes[31].inbox.push("message from 33 --");
-   nodes[53].inbox.push("message from 53 CDF");
 
-
-   var counter = 1;
-   while(areThereMessagesToProcess(2)){
-      console.log("Running iteration: " + counter);
-
-      nodes.forEach(n => {
-         n.process();
-         n.deliver();
-      });
-
-      counter++;
-
-      if(counter > 20){
-         break;
-      }
-
-   }
 
 
    console.log("################## Results ##############################");
@@ -159,17 +148,9 @@ mainApp.controller('mainController', function($scope) {
    }
 
 
-   const centerNode = nodes[100];
-   assignRanges(centerNode);
-
-   drawNetwork(nodes);
-
-
    $scope.getNumberOfNodes = function(){
       return nodes.length;
    }
-
-
 
    $scope.centerNode = nodes.length /2;
    $scope.updateNetwork = function(){
@@ -194,5 +175,105 @@ mainApp.controller('mainController', function($scope) {
       $('#messageScheduleModal').modal("show");
    }
 
+
+   $scope.scheduledMessages = [];
+   $scope.newScheduledMessage = {};
+   $scope.addNewMessage = function(){
+      $scope.newScheduledMessage.color = stringToColour($scope.newScheduledMessage.message);
+      console.log("color is " + $scope.newScheduledMessage.color);
+      $scope.scheduledMessages.push($scope.newScheduledMessage);
+      $scope.newScheduledMessage = {};
+   }
+
+   $scope.deleteMessage = function(messageToDelete){
+      $scope.scheduledMessages = $scope.scheduledMessages.filter(m => 
+         m.nodeId !== messageToDelete.nodeId && m.message !== messageToDelete.message && m.color !== messageToDelete.color);
+   }
+
+
+   $scope.enum = {
+      initial:"initial",
+      sending:"sending",
+      reset:"reset"
+   };
+
+   $scope.simulationMode = $scope.enum.initial;
+   $scope.sendMessages = function(){
+      $('#messageScheduleModal').modal("hide");
+      $scope.simulationMode = $scope.enum.sending;
+      $scope.scheduledMessages.forEach(m => {
+         nodes[m.nodeId ].inbox.push(m);
+         nodes[m.nodeId ].process();
+         nodes[m.nodeId ].deliver();
+         nodes[m.nodeId ].sizeFactor = 2;
+      });
+      updateNetwork(nodes);
+   }
+
+   
+   var counter = 1;
+   $scope.moveNext = function(){
+      if(areThereMessagesToProcess($scope.scheduledMessages.length)){
+         console.log("Running iteration: " + counter);
+
+         nodes.forEach(n => {
+            n.process();
+         });
+
+
+         nodes.forEach(n => {
+            n.deliver();
+         });
+
+         counter++;
+      }else{
+         $scope.simulationMode = $scope.enum.reset;
+      }
+      updateNetwork(nodes);
+   }
+
+
+   $scope.reset = function(){
+      
+      nodes.forEach( n => {
+         n.round = 1;
+         n.logs.length = 0;
+         n.sizeFactor = 1;
+         n.processedMessages.length = 0;
+         n.inbox.length = 0;
+         n.outbox.length = 0;
+      });
+      $scope.scheduledMessages = [];
+      $scope.newScheduledMessage = {};
+      $scope.simulationMode = $scope.enum.initial;
+
+      updateNetwork(nodes);
+   }
+
+
+
+   //$scope.updateNetwork();
+   
+   assignRanges(nodes[$scope.centerNode]);
+   drawNetwork(nodes);
+
+/*
+      var counter = 1;
+      while(areThereMessagesToProcess(2)){
+         console.log("Running iteration: " + counter);
+
+         nodes.forEach(n => {
+            n.process();
+            n.deliver();
+         });
+
+         counter++;
+
+         if(counter > 20){
+            break;
+         }
+      }
+
+*/
 
 });

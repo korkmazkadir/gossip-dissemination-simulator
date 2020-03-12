@@ -39,13 +39,13 @@ function drawNetwork(nodes){
       .data(nodes)
       .enter().append("circle")
         .attr("class", "node")
-        .attr("r", 5)
+        .attr("r", function(d) { return d.sizeFactor * 5; })
         .attr("fill", function(d) { return d.getColor(); })
 
     simulation = d3.forceSimulation(nodes)
         .force("charge", d3.forceCollide().radius(5))
         .force("r", d3.forceRadial(function(d) {
-            return d.range * numberOfNodes * 0.06;
+            return d.range * numberOfNodes * 0.04;
         }))
         .on("tick", ticked);
 
@@ -61,6 +61,9 @@ function drawNetwork(nodes){
 function updateNetwork(nodes){
   node = node.data(nodes);
   node.exit().remove();
+  node.attr("fill", function(d) { return d.getColor(); })
+      .attr("r", function(d) { return d.sizeFactor * 5; });
+
   simulation.nodes(nodes);
   simulation.alpha(1).restart();
 }
